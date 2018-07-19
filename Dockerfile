@@ -8,17 +8,31 @@ MAINTAINER himmel17
 # 	npm config set strict-ssl false && \
 # 	npm -g config set registry http://registry.npmjs.org/
 
-RUN npm install -g coffee-script yo generator-hubot  &&  \
-	useradd hubot -m
+# RUN npm install -g coffee-script yo generator-hubot  &&  \
+# 	useradd hubot -m
+RUN npm install -g coffee-script yo generator-hubot
 
-ENV BOT_NAME "bot"
-ENV BOT_OWNER "No owner specified"
-ENV BOT_DESC "Hubot with rocketbot adapter"
+ARG user_name="hubot"
+ARG user_id=1001
+ARG group_name="rsd"
+ARG group_id=1001
 
-ENV ROCKETCHAT_URL "43.30.154.37:3000"
-ENV ROCKETCHAT_ROOM "general"
-ENV ROCKETCHAT_USER "bot"
-ENV ROCKETCHAT_PASSWORD "botpassword"
+# ユーザ設定
+# ユーザID,グループIDをパラメータにすることでホストボリュームに対する操作を
+# ユーザ権限で実行できるようにしている．
+RUN groupadd -g ${group_id} ${group_name} && \
+	useradd --create-home --shell /bin/bash \
+	--uid ${user_id} --gid ${group_id} --home-dir /home/${user_name} \
+	${user_name}
+
+ENV BOT_NAME="bot"
+ENV BOT_OWNER="No owner specified"
+ENV BOT_DESC="Hubot with rocketbot adapter"
+
+ENV ROCKETCHAT_URL=43.30.154.37:3000
+ENV ROCKETCHAT_ROOM="general"
+ENV ROCKETCHAT_USER="bot"
+ENV ROCKETCHAT_PASSWORD="botpassword"
 
 USER hubot
 WORKDIR /home/hubot
